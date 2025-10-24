@@ -32,10 +32,75 @@ const tabs = [
 	{ label: 'Giao dịch đổi pin', value: 'transaction' },
 ];
 
+
+
+
+
+
+
+// Pin station mockup - phong cách tối giản, pin hình tròn, nền sáng, hiệu ứng glow
+function PinStationMockup({ batteries }) {
+	const [selected, setSelected] = useState(null);
+	const totalSlots = 20;
+	const filled = batteries.slice(0, totalSlots);
+	const emptySlots = totalSlots - filled.length;
+	const allSlots = [
+		...filled,
+		...Array.from({ length: emptySlots }, (_, i) => ({
+			id: `EMPTY${i+1}`,
+			type: 'Chưa có pin',
+			status: 'Trống',
+			soh: 0,
+			location: '-',
+			lastCharge: '-',
+			empty: true
+		}))
+	];
+	const fullCount = filled.length;
+	return (
+		<div className="station-mockup-minimal">
+			<div className="station-mockup-minimal-inner">
+				<div className="station-mockup-minimal-screen">
+					<span className="station-mockup-minimal-count">{fullCount}/20</span>
+				</div>
+				<div className="station-mockup-minimal-grid">
+					{allSlots.map((b, i) => (
+						<div
+							key={b.id}
+							className={"station-mockup-minimal-battery" + (selected === i ? " selected" : "") + (b.empty ? " empty" : "")}
+							onClick={() => !b.empty && setSelected(i)}
+							title={b.id}
+						>
+							<span className="station-mockup-minimal-dot" style={{
+								background: b.empty ? '#e5e7eb' : '#6be445',
+								boxShadow: b.empty ? 'none' : '0 0 16px 4px #6be44588, 0 2px 8px #b6e4b6',
+								border: b.empty ? '2px solid #bbb' : '2.5px solid #6be445',
+								opacity: b.empty ? 0.5 : 1
+							}}></span>
+						</div>
+					))}
+				</div>
+			</div>
+			{selected !== null && !allSlots[selected].empty && (
+				<div className="station-popup">
+					<strong>{allSlots[selected].id}</strong> - {allSlots[selected].type}<br />
+					<span>Trạng thái: <b>{allSlots[selected].status}</b></span><br />
+					<span>Sức khỏe: <b>{allSlots[selected].soh}%</b></span><br />
+					<span>Vị trí: <b>{allSlots[selected].location}</b></span><br />
+					<span>Sạc lần cuối: <b>{allSlots[selected].lastCharge}</b></span><br />
+					<button className="station-popup-close" onClick={() => setSelected(null)}>Đóng</button>
+				</div>
+			)}
+		</div>
+	);
+}
+
 export default function StaffDashboard({ user, onLoginClick }) {
 	const [activeTab, setActiveTab] = useState('inventory');
 	return (
 		<div className="staff-dashboard-wrap">
+			{/* Station mockup */}
+			<PinStationMockup batteries={batteryList} />
 			<div className="staff-dashboard-card">
 				<h2 className="staff-dashboard-title">Dashboard Nhân viên Trạm</h2>
 				<div className="staff-dashboard-subtitle">Quản lý tồn kho pin và giao dịch đổi pin</div>
@@ -146,7 +211,7 @@ export default function StaffDashboard({ user, onLoginClick }) {
 						</div>
 					)}
 				</div>
+			</div>
 		</div>
-	</div>
 	);
 }

@@ -16,7 +16,7 @@ import { createMapManager } from '../../utils/mapManager';
  * @param {boolean} [showPopup] - Whether to show popup on marker click
  */
 export default function MapboxMap({
-  token,
+  token = "pk.eyJ1IjoiZXhhbXBsZSIsImEiOiJja2...",
   stations = [],
   selectedStation,
   setSelectedStation,
